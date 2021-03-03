@@ -20,7 +20,7 @@ function createNewNote(body, notesArray) {
     notesArray.push(note);
     fs.writeFileSync(
         path.join(__dirname, './db/db.json'),
-        JSON.stringify({notesArray}, null, 2)
+        JSON.stringify({ notesArray }, null, 2)
     );
     return note;
 };
@@ -57,7 +57,7 @@ app.post('/api/notes', (req, res) => {
         res.status(400).send('The note is not properly formatted.');
     } else {
         const note = createNewNote(req.body, notes);
-        res.json(note);
+        res.json(notes);
   }
 });
 
