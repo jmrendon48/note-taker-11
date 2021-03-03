@@ -3,11 +3,11 @@ const fs = require('fs');
 const path = require('path');
 const express = require('express');
 const app = express();
-
 // parse incoming string or array data
 app.use(express.urlencoded({ extended: true }));
 // parse incoming JSON data
 app.use(express.json());
+app.use(express.static('public'));
 const { notes } = require('./db/db.json');
 
 function findById(id, notesArray) {
@@ -60,6 +60,31 @@ app.post('/api/notes', (req, res) => {
         res.json(notes);
   }
 });
+
+app.delete("/api/notes/:id", (req, res) => {
+    const id = req.params.id;
+    notes.forEach((array, index) => {
+        if (id == array.id) {    
+            notes.splice(index, 1);
+            const newNotes = notes.slice();
+            const jsonNotes = JSON.stringify({ notes: newNotes }, null, 2)
+            fs.writeFile("./db/db.json", jsonNotes, function(err) {
+                if (err) {
+                    return console.log(err);
+                }
+            });
+        }
+    });
+    res.json(true);
+});
+
+app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/index.html'));
+});
+
+app.get('/notes', (req, res) => {
+    res.sendFile(path.join(__dirname, './public/notes.html'));
+  });
 
 app.listen(3001, () => {
     console.log(`API server now on port 3001!`);
